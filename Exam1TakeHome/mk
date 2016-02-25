@@ -1,0 +1,37 @@
+VFD=mtximage2
+
+echo Kill previous attempts . . . . 
+sudo rm $VFD
+
+echo copying FDimage . . . .
+sudo cp mtximage $VFD
+
+echo Compiling Assembly. . . . 
+as86 -o ts.o ts.s
+echo Compiling t.c Code. . . . 
+bcc  -c -ansi t.c
+echo Compiling Queue.c Code. . . . . 
+bcc -c -ansi Queue.c
+echo Compiling interruptHandler.c Code. . . . 
+bcc  -c -ansi interruptHandler.c
+
+echo Linking . . . .
+ld86 -d -o mtx ts.o t.o Queue.o interruptHandler.o mtxlib /usr/lib/bcc/libc.a
+
+echo mount $VFD on /mnt
+sudo mount -o loop $VFD /mnt
+
+sudo cp mtx /mnt/boot
+sudo umount /mnt
+
+rm *.o mtx
+
+(cd USER; ./mku u1)
+
+echo ready to go?
+read dummy
+
+echo Launching qemu . . .
+qemu-system-i386 -fda $VFD -no-fd-bootchk
+
+
