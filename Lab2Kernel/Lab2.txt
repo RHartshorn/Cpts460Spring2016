@@ -1,0 +1,162 @@
+1;3409;0c
+460 Lab Assignment #2 : MTX System
+
+
+               DUE & DEMO : 12-3pm and 4-7pm(or later if necessary) on Friday (Feb 5th, 2016).
+                            The sign-up sheet is on the door of Sloan 322.
+
+Download the files from ~samples/LAB2/MTX4.1 directory:
+
+    FDimage
+    ts.s, t.c, mtxlib
+    mk
+
+Take a look at the mk script to see what it does.
+
+-------------------------------------------------------------------
+mtxlib is a LINKing library containing 
+
+       getc(), putc(), printf() and gets(buf[ ])
+
+But you should use your OWN printf() and gets() functions.
+-------------------------------------------------------------------
+
+ASSIGNMENT: Modify t.c to do the following
+
+1. Define PROC structure as follows.
+
+      #define SSIZE 1024
+
+      typedef struct proc{
+                 struct proc *next;
+                 int    ksp;
+                                       //   0    1     2     3     4
+                 int    status;        // FREE|READY|SLEEP|BLOCK|ZOMBIE
+                 int    priority;      // priority
+                 int    pid;           // process pid
+                 int    ppid;          // parent pid 
+                 struct proc *parent;  // pointer to parent PROC
+
+                 int    kstack[SSIZE]; // SSIZE=1024
+      }PROC;  
+
+
+   #define NPROC 9
+   PROC proc[NPROC], *running, *freeList, *readyQueue;
+
+where
+   running -> current executing PROC
+   freeList is a list of FREE PROCs
+   readyQueue is a prioirty queue of READY PROCs
+
+2. When MTX starts, initialize the PROC structures as follows:
+        
+   (1). For each PROC do:
+            status = FREE;
+            pid = index of PROC
+            priority = 0;
+            ppid = 0; 
+            parent = 0;
+
+   (2). Let running->PROC[0]; status=READY; parent=&PROC[0];
+         
+   (3). freeList = P1 -> P2 ----> P8 -> 0
+
+   (4). readyQueue = 0;
+
+After initalization, the system is running P0. 
+Then, let P0 execute
+
+       kfork();   // create a child process and enter it into readyQueue
+
+       while(1){  // loop forever
+         if (readyQueue) 
+            tswitch(); // switch process
+       }
+
+3. Wirte YOUR own C code for
+       
+    PROC *get_proc(PROC **list)     // e.g. get_proc(&freeList); 
+    {
+      get a FREE PROC from *list; 
+      return FREE PROC pointer; 
+      return 0 if no more FREE PROCs.
+    }
+   
+    put_proc(PROC **list, PROC *p)  // e.g. put_proc(&freeList, p);
+    {
+       enter p into *list;
+    }
+
+
+4. PROC *readyQueue is a priority queue containing PROCs that are READY to run. 
+   PROCs with the same priority are ordered FIFO. 
+
+   Write YOUR Code for
+      
+    enqueue(PROC **queue, PROC *p)
+    {
+       enter p into queue by priority; 
+    }
+ 
+    PROC *dequeue(PROC **queue)
+    {
+       remove a PROC with the highest priority (the first one in queue)
+       return its pointer;
+    }
+    
+    printQueue(PROC *queue)
+    {
+       print the queue entries in the form of [pid, prioirty]-> ... ->NULL
+    }
+
+
+5. Instead of creating ALL the PROCs at once, write a
+           PROC *kfork() 
+   function to create a process DYNAMICALLY.
+
+    PROC *kfork()
+    {  
+       
+      (1). PROC *p = get_proc(&freeList); to get a FREE PROC from freeList;
+                     if none, return 0 for FAIL;
+
+      (2). Initialize the new PROC p with
+             --------------------------
+             status   = READY;
+             priority = 1;
+             ppid = running pid;
+             parent = running;
+            --------------------------
+
+          *********** THIS IS THE MAIN PART OF THE ASSIGNMENT!!!***********
+          INITIALIZE p's kstack to make it start from body() when it runs.
+
+          To do this, PRETNED that the process called tswitch() earlier from the
+          the entry address of body() and executed the SAVE part of tswitch()
+          to give up CPU. 
+          Initialize its kstack[ ] and ksp to comform to these.
+  
+          enter p into readyQueue;
+          *****************************************************************
+
+          return p;
+    }
+
+6. In the body() function, add a new command 'f'. The commands are:
+
+      's' : call tswitch to switch process;
+      'q' : call exit(), which changes running process status to ZOMBIE,
+                         then call tswitch() to give up CPU;
+
+      'f' : kfork() a child PROC;
+            print message showing success or failure.
+
+7. Use the MODIFIED scheduler() function:
+
+    scheduler()
+    {
+       if (running->status == READY)
+          enqueue(&readyQueue, running);
+       running = dequeue(&readyQueue);
+    }

@@ -1,0 +1,60 @@
+                     LAB Assignment #3
+
+                  DUE: Friday, 2-12, 2016
+                  DEMO TIME: 12:00 PM-3:00 PM and 4:00 PM-7:00 PM on Feb 12th
+                             The sign-up sheet is available outside of TA's office.
+                             Note: DEMO for LAB 1 and LAB 3
+
+IMPLEMENT ksleep, kwakeup, kexit, kwait functions in the MTX kernel.
+
+1. Download files from samples/LAB3:
+       mtximage, mk, q, ts.s  t.c
+
+2. Run QEMU on mtximage, which is a SOULTION to LAB#3
+
+
+3. The t.c file needs YOUR C code. 
+   In YOUR body() function, ADD the new commands 'z', 'a', 'w', as in
+
+           [s|f|q|  z|a|w] 
+
+   where s : switch process
+         f : kfork a child
+         q : for the running PROC to become a ZOMBIE
+
+         z : running PROC go to sleep on an event value
+         a : wakeup ALL PROCs sleeping on event
+         w : to wait for a ZOMBIE child
+
+4. Write YOUR C code (per class NOTES) for 
+     
+     int ksleep(int event);
+     int kwakeup(int event);
+
+     int kexit(int exitvalue);
+     int kwait(int *status);
+   
+5. for each command, write a do_command() function:
+      's': do_tswitch(){....      }
+      'f': do_kfork()  {..........}
+       q: do_exit(){
+             ask for an exitValue (value), e.g. 123
+             kexit(exitValue);
+          }
+       z: do_sleep(){
+             ask for an event (value), e.g. 123; 
+             ksleep(event);
+          }
+       a: do_wakeup(){
+             ask for an event (value);
+             kwakeup(event);
+          }
+       w: do_wait(){
+             int pid, status;
+             pid = kwait(&status);
+             print pid and status;
+          }
+    
+6. Make YOUR t.c file work as in the SOLUTION.
+==========================================================================
+
