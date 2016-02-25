@@ -1,0 +1,36 @@
+VFD=mtximage2
+
+echo Kill previous attempts . . . 
+sudo rm $VFD
+
+echo copying MTXimage . . . 
+sudo cp mtximage $VFD
+
+echo compiling assembly . . . .
+as86 -o ts.o ts.s
+
+echo compiling ansi . . . .
+bcc -c -ansi util.c
+bcc -c -ansi Kernel.c
+bcc -c -ansi Queue.c
+bcc -c -ansi int.c
+bcc -c -ansi wait.c
+bcc -c -ansi t.c
+
+echo linking . . . .
+#ld86 -d -o mtx f.o c.o b.o a.o mtxlib /usr/lib/bcc/libc.a
+ld86 -d -o mtx *.o mtxlib /usr/lib/bcc/libc.a
+
+echo mounting $VFD . . . . 
+sudo mount -o loop $VFD /mnt
+sudo rm /mnt/boot/*
+sudo cp mtx /mnt/boot
+sudo umount /mnt
+
+sudo rm *.o mtx
+
+#(cd USER; ./mku u1)
+
+echo launching mtx . . . .
+qemu-system-i386 -fda $VFD -no-fd-bootchk
+

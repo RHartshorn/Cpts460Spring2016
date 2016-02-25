@@ -1,0 +1,32 @@
+VFD=mtximage2
+
+echo Cleanup . . . .
+rm mtximage2
+
+echo Copy $VFD . . . .
+cp mtximage $VFD
+
+echo Compile Assembly . . . .
+as86 -o ts.o ts.s
+
+echo Compile C . . . . 
+bcc  -c -ansi t.c
+
+echo Link . . . .
+ld86 -d -o mtx ts.o t.o mtxlib /usr/lib/bcc/libc.a
+
+echo Mount . . . .
+mount -o loop $VFD /mnt
+cp mtx /mnt/boot
+umount /mnt
+rm *.o mtx
+
+echo U1 . . . . 
+(cd USER; mku u1)
+
+echo ready . . . .
+read kittens
+
+qemu-system-i386 -fda mtximage -no-fd-bootchk
+
+

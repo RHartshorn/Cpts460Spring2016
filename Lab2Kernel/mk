@@ -1,0 +1,28 @@
+VFD=mtximage2
+
+echo Kill previous attempts . . . 
+sudo rm $VFD
+
+echo copying FDimage . . . 
+sudo cp mtximage $VFD
+
+echo Compiling . . . 
+as86 -o ts.o ts.s
+bcc  -c -ansi t.c
+ld86 -d -o mtx ts.o t.o mtxlib /usr/lib/bcc/libc.a
+
+echo mount $VFD on /mnt
+sudo mount -o loop $VFD /mnt
+
+sudo rm /mnt/boot/*
+
+sudo cp mtx /mnt/boot
+sudo umount /mnt
+
+echo ready to go?
+read dummy
+
+echo Launching qemu . . .
+qemu-system-i386 -fda $VFD -no-fd-bootchk
+
+

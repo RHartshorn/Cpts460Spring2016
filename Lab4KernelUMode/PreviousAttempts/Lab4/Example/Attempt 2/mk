@@ -1,0 +1,17 @@
+VFD=mtximage2
+
+echo Kill previous attempts . . . 
+sudo rm $VFD
+
+echo copying MTXimage . . . 
+sudo cp mtximage $VFD
+
+echo compiling ansi . . . .
+bcc -o a.o -c -ansi Main.c
+
+echo linking . . . .
+ld86 -d -o mtx *.o mtxlib /usr/lib/bcc/libc.a
+
+echo mounting $VFD . . . . 
+sudo mount -o loop $VFD /mnt
+sudo rm /mnt/boot/*
