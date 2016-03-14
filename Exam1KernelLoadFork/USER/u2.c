@@ -18,7 +18,7 @@ main()
     pid = getpid();
     color = 0x0C;
        
-    printf("--------------------- u1.c -------------------------\n");
+    printf("--------------------- u2.c -------------------------\n");
     printf("I am proc %d in U mode: running segment=%x\n",getpid(), getcs());
     show_menu();
     printf("Command ? ");

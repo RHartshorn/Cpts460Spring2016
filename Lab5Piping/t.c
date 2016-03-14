@@ -268,7 +268,6 @@ PROC *kfork(char *filename)
   
   PROC *tmpProc = getProc(&freeList);
   printf("kFork:\n");
-  
   //if the proc is null
   if(!tmpProc)
   {
@@ -286,13 +285,6 @@ PROC *kfork(char *filename)
   for(i = 1; i < 10; i++)
   {
     tmpProc->kstack[SSIZE - 9] = 0;
-  }
-
-  //setup the file discriptor to the forking processes file 
-  //discriptor
-  for(i = 0; i < NFD; i++)
-  {
-    tmpProc->fd[i] = running->fd[i];
   }
 
   tmpProc->kstack[SSIZE - 1] = (int)goUmode;
@@ -431,12 +423,6 @@ int init()
         p->priority = 0;  
         strcpy(proc[i].name, pname[i]);
         p->next = &proc[i+1];
-    }
-
-    //initalize all file discriptors to 0
-    for(i = 0; i < NFD; i++)
-    {
-      p->fd[i] = 0;
     }
 
     freeList = &proc[0];      // all procs are in freeList

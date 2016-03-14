@@ -51,7 +51,12 @@ int kcinth()
       case 7 : retValue = getc();           break;
       case 8 : retValue = putc(b);          break;
       case 9 : retValue = fork();           break;
-      case 10: retValue = exec(b);           break; 
+      case 10: retValue = exec(b);          break;
+      case 11: retValue = kpipe();          break;
+      case 12: retValue = pfd();            break;
+      case 13: retValue = kclose();         break;
+      case 14: retValue = kread();          break;
+      case 15: retValue = kwrite();         break; 
 
       case 99: kkexit(b);                   break;
 

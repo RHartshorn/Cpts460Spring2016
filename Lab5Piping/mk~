@@ -31,15 +31,9 @@ bcc  -c -ansi Utility.c Globals.h Header.h
 
 echo Compiling Inode.c Code. . . . 
 bcc  -c -ansi inode.c Globals.h Header.h ext2.h 
-
-echo Compiling fork.c Code. . . . 
-bcc  -c -ansi fork.c Globals.h Header.h ext2.h 
-
-echo Compiling exec.c Code. . . . 
-bcc  -c -ansi exec.c Globals.h Header.h ext2.h 
 #**************************************
 echo Linking . . . .
-ld86 -d -o mtx ts.o t.o Queue.o Loader.o interruptHandler.o IO.o Utility.o inode.o fork.o exec.o mtxlib /usr/lib/bcc/libc.a
+ld86 -d -o mtx ts.o t.o Queue.o Loader.o interruptHandler.o IO.o Utility.o Inode.o mtxlib /usr/lib/bcc/libc.a
 
 echo mount $VFD on /mnt
 sudo mount -o loop $VFD /mnt
@@ -49,7 +43,7 @@ sudo umount /mnt
 
 rm *.o mtx
 
-(cd USER; ./mkall)
+(cd USER; ./mku u1)
 
 echo ready to go?
 read dummy

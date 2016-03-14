@@ -1,3 +1,6 @@
+#include "uglobals.h"
+#include "uheader.h"
+
 //******************************************************************
 //Author: Robin Hartshorn
 //Student ID: 10906124
@@ -6,10 +9,47 @@
 //Project: Computer Science 460: Exam 1
 //******************************************************************
 
-char *cmd[]={"getpid", "ps", "chname", "kfork", "switch", "wait", "exit", "getc", "putc", "fork", "exec", 0};
-int numCmd = sizeof(cmd)/2;
+int userCode(int userNumber)
+{
+  char name[64]; 
+  int pid, cmd, color;
 
-#define LEN 64
+  while(1)
+  {
+    pid = getpid();
+    color = 0x0C;
+       
+    printf("--------------------- u%d.c -------------------------\n", userNumber);
+    printf("I am proc %d in U mode: running segment=%x\n",getpid(), getcs());
+    show_menu();
+    printf("Command ? ");
+    gets(name); 
+    if (name[0]==0) 
+      continue;
+
+    cmd = find_cmd(name);
+    switch(cmd){
+      case 0 : getpid();      break;
+      case 1 : ps();          break;
+      case 2 : chname();      break;
+      case 3 : kfork();       break;
+      case 4 : kswitch();     break;
+      case 5 : wait();        break;
+      case 6 : exit();        break;
+      case 7 : getc();        break;
+      case 8 : putc();        break;
+      case 9 : fork();        break;
+      case 10: uexec();       break;
+      case 11: pipe();        break;
+      case 12: pfd();         break;
+      case 13: close();       break;
+      case 14: read();        break;
+      case 15: write();       break;
+
+      default: invalid(name); break;
+    }
+  }
+}
 
 int geti()
 {
@@ -138,11 +178,45 @@ int uexec()
     printf("input filepath : ");
     gets(s);
     return syscall(10, s, 0);
-
-  //return syscall(10,filename,0);
 }
 
 int invalid(char *name)
 {
-    printf("Invalid command : %s\n", name);
+  printf("Invalid command : %s\n", name);
+}
+
+int pipe()
+{
+  printf("pipe\n");
+
+  return syscall(11, 0, 0);
+
+}
+
+int pfd()
+{
+  printf("pfd\n");
+
+  return syscall(12, 0, 0);
+}
+
+int close()
+{
+  printf("close\n");
+
+  return syscall(13, 0, 0);
+}
+
+int read()
+{
+  printf("read\n");
+
+  return syscall(14, 0, 0);
+}
+
+int write()
+{
+  printf("write\n");
+  
+  return syscall(15, 0, 0);
 }
