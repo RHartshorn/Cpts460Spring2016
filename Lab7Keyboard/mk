@@ -1,0 +1,63 @@
+VFD=mtximage2
+
+echo Kill previous attempts . . . . 
+sudo rm $VFD
+
+echo copying FDimage . . . .
+sudo cp mtximage $VFD
+
+echo Compiling Assembly. . . . 
+as86 -o ts.o ts.s
+
+#*************************************
+
+echo Compiling t.c Code. . . . 
+bcc  -c -ansi t.c Globals.h Header.h 
+
+echo Compiling Queue.c Code. . . . . 
+bcc -c -ansi Queue.c Globals.h Header.h 
+
+echo Compiling Loader.c Code. . . . . 
+bcc -c -ansi Loader.c Globals.h Header.h 
+
+echo Compiling interruptHandler.c Code. . . . 
+bcc  -c -ansi interruptHandler.c Globals.h Header.h 
+
+echo Compiling IO.c Code. . . . 
+bcc  -c -ansi IO.c Globals.h Header.h 
+
+echo Compiling Utility.c Code. . . . 
+bcc  -c -ansi Utility.c Globals.h Header.h 
+
+echo Compiling Inode.c Code. . . . 
+bcc  -c -ansi inode.c Globals.h Header.h ext2.h 
+
+echo Compiling fork.c Code. . . . 
+bcc  -c -ansi fork.c Globals.h Header.h ext2.h 
+
+echo Compiling exec.c Code. . . . 
+bcc  -c -ansi exec.c Globals.h Header.h ext2.h 
+
+echo Compiling pipe.c Code. . . . 
+bcc  -c -ansi pipe.c Globals.h Header.h ext2.h 
+#**************************************
+echo Linking . . . .
+ld86 -d -o mtx ts.o t.o Queue.o Loader.o interruptHandler.o IO.o Utility.o inode.o fork.o exec.o pipe.o mtxlib /usr/lib/bcc/libc.a
+
+echo mount $VFD on /mnt
+sudo mount -o loop $VFD /mnt
+
+sudo cp mtx /mnt/boot
+sudo umount /mnt
+
+rm *.o mtx
+
+(cd USER; ./mkall)
+
+echo ready to go?
+read dummy
+
+echo Launching qemu . . .
+qemu-system-i386 -fda $VFD -no-fd-bootchk
+
+

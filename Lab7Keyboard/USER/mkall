@@ -1,0 +1,14 @@
+VFD=../mtximage
+
+mount -o loop $VFD /mnt
+rm /mnt/bin/*
+umount /mnt
+
+
+echo --------------------- compile ucode -----------------------
+bcc -c -ansi ucode.c uglobals.h uheader.h
+
+./mku u1 ucode
+./mku u2 ucode
+
+rm *.o

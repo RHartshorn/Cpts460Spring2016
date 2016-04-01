@@ -41,8 +41,8 @@ int do_kwakeup();
 int do_ksleep();
 int init();
 int scheduler();
-int set_vector(u16 segment, u16 handler);
 main();
+int set_vector(u16 segment, u16 handler);
 
 //QUEUE **********
 int enqueue(PROC **queue, PROC *tmpProc);
@@ -70,10 +70,6 @@ void PrintInodeData(INODE * ip);
 //IO: DATASTRUCTURES **********
 void PrintHeader(HEADER *head);
 
-//IO: DATASTRUCTURES **********
-int pfd(OFT *fd);
-int printPipeContents(PIPE *pipeptr);
-
 //INODE ***********
 int LoadInode(int ino, int InodeBeginBlock, INODE **ip);
 int LoadGroup(GD **gp, int GDBlockNumber);
@@ -89,15 +85,8 @@ int fork();
 //EXEC **********
 int exec(char *filepath);
 
-//PIPE **********
-int kpipe(int pd[2]);
-int kclose(int fdLocation);
-int kread(int fdLocation, char *buf, int nbytes);
-int kwrite(int fdLocation, char *buf, int nbytes);
-
 //ASSEMBLY FUNCTIONS **********
 int int80h();
 int goUmode();
-
 
 #endif
